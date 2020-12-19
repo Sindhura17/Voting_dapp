@@ -41,6 +41,17 @@ window.App = {
   },
 
   vote: function() {
+	  /*window.web3.eth.getAccounts().then(function(response) { accounts = response;});
+	//const accounts = window.web3.eth.getAccounts();
+	var address = $("#addr-input").val() 
+	for (const addr in accounts){
+		if (accounts[addr] == address){
+			VotingContract.defaults({from: window.web3.eth.accounts[addr],gas:6721975})
+		}
+	}.catch(function(err){ 
+        console.log("ERROR! " + err.message)
+        $("#addr-msg").html("<p>invalid address</p>")
+      })*/
     var uid = $("#id-input").val() 
 
      
@@ -73,57 +84,44 @@ window.App = {
     })
   },
 
-  // function called when the "Count Votes" button is clicked
   findNumOfVotes: function() {
     VotingContract.deployed().then(function(instance){
-      // this is where we will add the candidate vote Info before replacing whatever is in #vote-box
       var box = $("<section></section>") 
 
-      // loop through the number of candidates and display their votes
       for (var i = 0; i < window.numOfCandidates; i++){
-        // calls two smart contract functions
         var candidatePromise = instance.getCandidate(i)
         var votesPromise = instance.totalVotes(i)
 
-        // resolves Promises by adding them to the variable box
         Promise.all([candidatePromise,votesPromise]).then(function(data){
           box.append(`<p>${window.web3.toAscii(data[0][1])}: ${data[1]}</p>`)
         }).catch(function(err){ 
           console.error("ERROR! " + err.message)
         })
       }
-      $("#vote-box").html(box) // displays the "box" and replaces everything that was in it before
+      $("#vote-box").html(box) 
     })
   }
 }
 
-// When the page loads, we create a web3 instance and set a provider. We then set up the app
 window.addEventListener("load", function() {
-  // Is there an injected web3 instance?
   if (window.ethereum) {
     const web3 = new Web3(window.ethereum);
     try {
-      // Request account access if needed
       window.ethereum.enable();
-      // Acccounts now exposed
       window.web3= web3;
     } catch (error) {
       console.error(error);
     }
   }
-  // Legacy dapp browsers...
   else if (window.web3) {
-    // Use Mist/MetaMask's provider.
     console.log('Injected web3 detected.');
 
   }
-  // Fallback to localhost; use dev console port by default...
   else {
     const provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
     const web3 = new Web3(provider);
     console.log('No web3 instance injected, using Local web3.');
     window.web3= web3;
   }
-  // initializing the App
   window.App.start()
 })
