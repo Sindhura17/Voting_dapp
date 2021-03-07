@@ -23,7 +23,7 @@ contract Voting {
     }
 
     uint numCandidates; 
-    uint numVoters;
+    //uint numVoters;
 
     mapping (uint => Candidate) candidates;
     mapping (bytes32 => uint) voters;
@@ -34,7 +34,7 @@ contract Voting {
         emit AddedCandidate(candidateID);
     }
 
-    function vote(bytes32 uid, uint candidateID) public returns (bool) {
+    function vote(bytes32 uid, uint candidateID) public{
         if (candidates[candidateID].doesExist == true && voters[uid]==0) {
             //uint voterID = numVoters++;
             voters[uid] = 1;
@@ -55,9 +55,9 @@ contract Voting {
         return numCandidates;
     }
 
-    function getNumOfVoters() public view returns(uint) {
+    /*function getNumOfVoters() public view returns(uint) {
         return numVoters;
-    }
+    }*/
     function getCandidate(uint candidateID) public view returns (uint,bytes32, bytes32) {
         return (candidateID,candidates[candidateID].name,candidates[candidateID].party);
     }
